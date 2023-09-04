@@ -116,7 +116,6 @@ get_session_filename :: () {
     assert(false, "get_session_filename is not yet supported");
 }
 
-
 open_session :: () {
     command := rdbg_Command.RDBG_COMMAND_OPEN_SESSION;
     assert(false, "open_session is not yet supported");
@@ -171,7 +170,6 @@ close_all_files :: () {
     command := rdbg_Command.RDBG_COMMAND_CLOSE_ALL_FILES;
     assert(false, "close_all_files is not yet supported");
 }
-
 
 get_open_files :: () {
     command := rdbg_Command.RDBG_COMMAND_GET_OPEN_FILES;
@@ -651,15 +649,15 @@ expect :: (for_command: rdbg_Command) {
 
 
 
-process_control_results :: () {
+process_control_results :: () -> something_happened: bool {
     success, count := read_pipe(control_pipe, control_receive_buffer);
     if !success {
         error := GetLastError();
         print("Error reading from Remedy control pipe: %\n", error);
-        return;
+        return false;
     }
 
-    if !count  return;
+    if !count  return false;
 
     print("Read % bytes\n", count);
     for i: 0 .. count - 1
@@ -971,6 +969,7 @@ process_control_results :: () {
             handle_delete_all_watches_control_result(delete_all_watches_result);
         }
     }
+    return true;
 }
 
 

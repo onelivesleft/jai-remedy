@@ -3,12 +3,10 @@ remedy_init :: () -> success: bool {
     control_pipe = CreateFileW(name, GENERIC_READ | GENERIC_WRITE, 0, null, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, null);
     if control_pipe == INVALID_HANDLE_VALUE {
         error := GetLastError();
-        if error == ERROR_FILE_NOT_FOUND {
+        if error == ERROR_FILE_NOT_FOUND
             print("Could not find Remedy control pipe: is remedy running with the -servername option set?\n");
-        }
-        else {
+        else
             print("Error connecting to Remedy control pipe: %\n", error);
-        }
         return false;
     }
 
@@ -16,21 +14,20 @@ remedy_init :: () -> success: bool {
     events_pipe = CreateFileW(name, GENERIC_READ, 0, null, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, null);
     if control_pipe == INVALID_HANDLE_VALUE {
         error := GetLastError();
-        if error == ERROR_FILE_NOT_FOUND {
+        if error == ERROR_FILE_NOT_FOUND
             print("Could not find Remedy events pipe: is remedy running with the -servername option set?\n");
-        }
-        else {
+        else
             print("Error connecting to Remedy events pipe: %\n", error);
-        }
         return false;
     }
 
     return true;
 }
 
-remedy_update :: () {
-    process_events();
-    process_control_results();
+remedy_update :: () -> something_happened: bool {
+    result := process_events();
+    result |= process_control_results();
+    return result;
 }
 
 

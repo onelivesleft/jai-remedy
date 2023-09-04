@@ -21,7 +21,7 @@ main :: () {
     row_height :: 32;
 
     while gui_begin_frame() {
-        remedy_update();
+        if remedy_update()  gui_notable_frame();
 
         top, bottom := split_top_bottom(at(window), row_height);
         left, right := split_left_right(at(top), 300);
@@ -53,11 +53,13 @@ main :: () {
             previous_source_line = current_source_line;
             source_code.scrollbar.int_value = max(0, current_source_line - source_code.labels.count / 2);
         }
-        _label := source_code.labels[source_code.labels.count / 2 - 1];
-        rect := _label.rect;
-        rect.w += rect.x;
-        rect.x = 0;
-        draw_box(rect, .{1.0, 1.0, 0.0, 0.1});
+        _label := label_for_text_row(source_code, current_source_line - 1);
+        if _label {
+            rect := _label.rect;
+            rect.w += rect.x;
+            rect.x = 0;
+            draw_box(rect, .{1.0, 1.0, 0.0, 0.1});
+        }
     }
 }
 

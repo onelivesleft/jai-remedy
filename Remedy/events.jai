@@ -120,15 +120,15 @@ Event_Output_Debug_String :: struct {
 #scope_module
 
 
-process_events :: () {
+process_events :: () -> something_happened: bool {
     success, count := read_pipe(events_pipe, events_buffer);
     if !success {
         error := GetLastError();
         print("Error reading from Remedy events pipe: %\n", error);
-        return;
+        return false;
     }
 
-    if !count  return;
+    if !count  return false;
 
     data := events_buffer.data;
 
@@ -208,6 +208,7 @@ process_events :: () {
         data += advance;
         count -= advance;
     }
+    return true;
 }
 
 
