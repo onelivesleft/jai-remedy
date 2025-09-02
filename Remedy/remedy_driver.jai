@@ -56,42 +56,42 @@ rdbg_CommandResult :: enum u16 {
 
     OK :: 1;
 
-    // Generic failure
     FAIL :: 2;
+    // Generic failure
 
+    ABORTED :: 3;
     // Result if the command is aborted due to a specified behavior and
     // condition including RDBG_IF_DEBUGGING_TARGET_ABORT_COMMAND or
     // RDBG_IF_SESSION_IS_MODIFIED_ABORT_COMMAND. The result can also be returned
     // if an unnamed session is saved, prompts for a filename, and the user
     // cancels this operation.
-    ABORTED :: 3;
 
+    INVALID_COMMAND :: 4;
     // Result if the given command buffer given is less than 2 bytes or if the
     // command is not one of the enumerated commands in rdbg_Command.
-    INVALID_COMMAND :: 4;
 
-    // Result if the response generated is too large to fit in the buffer.
     BUFFER_TOO_SMALL :: 5;
+    // Result if the response generated is too large to fit in the buffer.
 
-    // Result if an opening a file (i.e., a session, text file).
     FAILED_OPENING_FILE :: 6;
+    // Result if an opening a file (i.e., a session, text file).
 
-    // Result if saving a session fails.
     FAILED_SAVING_SESSION :: 7;
+    // Result if saving a session fails.
 
-    // Result if the given ID is invalid.
     INVALID_ID :: 8;
+    // Result if the given ID is invalid.
 
+    INVALID_TARGET_STATE :: 9;
     // Result if a command expects the target to be in a particular state (not
     // debugging, debugging and suspended, or debugging and executing) and is
     // not.
-    INVALID_TARGET_STATE :: 9;
 
-    // Result if an active configuration does not exist
     FAILED_NO_ACTIVE_CONFIG :: 10;
+    // Result if an active configuration does not exist
 
-    // Result if the command does not apply to given breakpoint's kind
     INVALID_BREAKPOINT_KIND :: 11;
+    // Result if the command does not apply to given breakpoint's kind
 
 
     RDBG_COMMAND_RESULT_UNKNOWN :: UNKNOWN;
@@ -172,6 +172,7 @@ rdbg_ProcessorBreakpointAccessKind :: enum u8 {
 
 
 rdbg_Command :: enum u16 {
+    BRING_DEBUGGER_TO_FOREGROUND :: 50;
     // Bring the RemedyBG window to the foreground and activate it. No additional
     // arguments follow the command. Returns RDBG_COMMAND_RESULT_OK or
     // RDBG_COMMAND_RESULT_FAIL.
@@ -179,8 +180,8 @@ rdbg_Command :: enum u16 {
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    BRING_DEBUGGER_TO_FOREGROUND :: 50;
 
+    SET_WINDOW_POS :: 51;
     // Set the size and position of the RemedyBG window.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -190,8 +191,8 @@ rdbg_Command :: enum u16 {
     // [height :: int32_t]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    SET_WINDOW_POS :: 51;
 
+    GET_WINDOW_POS :: 52;
     // Get the size and position of the RemedyBG window.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -202,8 +203,8 @@ rdbg_Command :: enum u16 {
     // [width :: int32_t]
     // [height :: int32_t]
     // [is_maximized: rdbg_Bool]
-    GET_WINDOW_POS :: 52;
 
+    SET_BRING_TO_FOREGROUND_ON_SUSPENDED :: 53;
     // Set whether to automatically bring the debugger to the foreground whenever
     // the target is suspended (breakpoint hit, exception, single-step complete,
     // etc.). Defaults to true if not set.
@@ -212,8 +213,8 @@ rdbg_Command :: enum u16 {
     // [bring_to_foreground_on_suspended :: rdbg_Bool (uint8_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    SET_BRING_TO_FOREGROUND_ON_SUSPENDED :: 53;
 
+    EXIT_DEBUGGER :: 75;
     // Exit the RemedyBG application.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -221,19 +222,19 @@ rdbg_Command :: enum u16 {
     // [msb :: rdbg_ModifiedSessionBehavior (uint8_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    EXIT_DEBUGGER :: 75;
 
     // Session
     //
 
+    GET_IS_SESSION_MODIFIED :: 100;
     // Returns whether the current session is modified, or "dirty".
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [modified :: rdbg_Bool (uint8_t)]
-    GET_IS_SESSION_MODIFIED :: 100;
 
+    GET_SESSION_FILENAME :: 101;
     // Returns the current session's filename. If the filename has not been set
     // for the session then the result will be
     // RDBG_COMMAND_RESULT_UNNAMED_SESSION and the length of |filename| will be
@@ -243,8 +244,8 @@ rdbg_Command :: enum u16 {
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [filename :: rdbg_String]
-    GET_SESSION_FILENAME :: 101;
 
+    NEW_SESSION :: 102;
     // Creates a new session. All configurations are cleared and reset.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -252,8 +253,8 @@ rdbg_Command :: enum u16 {
     // [msb :: rdbg_ModifiedSessionBehavior (uint8_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    NEW_SESSION :: 102;
 
+    OPEN_SESSION :: 103;
     // Open a session with the given filename.
     //
     // [command :: rdbg_Command (uint16_t)]
@@ -262,8 +263,8 @@ rdbg_Command :: enum u16 {
     // [filename :: rdbg_String]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    OPEN_SESSION :: 103;
 
+    SAVE_SESSION :: 104;
     // Save session with its current filename. If the filename is has not been
     // specified for the session the user will be prompted. To save with a
     // filename see RDBG_COMMAND_SAVE_AS_SESSION, instead.
@@ -271,16 +272,16 @@ rdbg_Command :: enum u16 {
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    SAVE_SESSION :: 104;
 
+    SAVE_AS_SESSION :: 105;
     // Save session with a given filename.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // [filename :: rdbg_String]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    SAVE_AS_SESSION :: 105;
 
+    GET_SESSION_CONFIGS :: 106;
     // Retrieve a list of configurations for the current session.
     //
     // [cmd :: rdbg_Command (uint16_t)
@@ -297,8 +298,8 @@ rdbg_Command :: enum u16 {
     //   [break_at_nominal_entry_point :: rdbg_Bool]
     //   [name :: rdbg_String]
     // }
-    GET_SESSION_CONFIGS :: 106;
 
+    ADD_SESSION_CONFIG :: 107;
     // Add a new session configuration to the current session. All string
     // parameters accept zero length strings. Multiple environment variables
     // should be newline, '\n', separated. Returns the a unique ID for the
@@ -317,8 +318,8 @@ rdbg_Command :: enum u16 {
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [uid :: rdbg_Id]
-    ADD_SESSION_CONFIG :: 107;
 
+    SET_ACTIVE_SESSION_CONFIG :: 108;
     // Sets the active configuration for a session by configuration ID. If the
     // ID is not valid for the current session
     // RDBG_COMMAND_RESULT_INVALID_ID is returned.
@@ -327,8 +328,8 @@ rdbg_Command :: enum u16 {
     // [id  :: rdbg_Id]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    SET_ACTIVE_SESSION_CONFIG :: 108;
 
+    DELETE_SESSION_CONFIG :: 109;
     // Deletes a session configuration by ID. If the ID is not valid for the
     // current session RDBG_COMMAND_REMOVE_SESSION_CONFIG is returned.
     //
@@ -336,18 +337,18 @@ rdbg_Command :: enum u16 {
     // [id  :: rdbg_Id]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    DELETE_SESSION_CONFIG :: 109;
 
+    DELETE_ALL_SESSION_CONFIGS :: 110;
     // Deletes all session configurations in the current session.
     //
     // [cmd :: rdbg_Command (uint16_t)
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    DELETE_ALL_SESSION_CONFIGS :: 110;
 
     // Source Files
     //
 
+    GOTO_FILE_AT_LINE :: 200;
     // Opens the given file, if not already opened, and navigates to the
     // specified line number. The line number is optional and can be elided from
     // the command buffer. Returns result along with an ID for the file.
@@ -358,23 +359,23 @@ rdbg_Command :: enum u16 {
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [id :: rdbg_Id]
-    GOTO_FILE_AT_LINE :: 200;
 
+    CLOSE_FILE :: 201;
     // Close the file with the given ID.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // [id :: rdbg_Id]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    CLOSE_FILE :: 201;
 
+    CLOSE_ALL_FILES :: 202;
     // Close all open files
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    CLOSE_ALL_FILES :: 202;
 
+    GET_CURRENT_FILE :: 203;
     // Returns the current file. If no file is open, returns a zero ID,
     // zero-length filename, and zero line number.
     //
@@ -384,8 +385,8 @@ rdbg_Command :: enum u16 {
     // [id :: rdbg_Id]
     // [filename :: rdbg_String]
     // [line_num :: uint32_t]
-    GET_CURRENT_FILE :: 203;
 
+    GET_OPEN_FILES :: 204;
     // Retrieve a list of open files.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -397,19 +398,19 @@ rdbg_Command :: enum u16 {
     //   [filename :: rdbg_String]
     //   [line_num :: uint32_t]
     // }
-    GET_OPEN_FILES :: 204;
 
     //
     // Debugger Control
 
+    GET_TARGET_STATE :: 300;
     // Returns the target state for the current session.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [staste :: rdbg_TargetState (uint16_t)]
-    GET_TARGET_STATE :: 300;
 
+    START_DEBUGGING :: 301;
     // If the target is stopped, i.e., not currently being debugged, then start
     // debugging the active configuration. Setting break_at_entry to true will
     // stop execution at the at entry point specified in the configuration:
@@ -421,16 +422,16 @@ rdbg_Command :: enum u16 {
     // [break_at_entry_point :: rdbg_Bool (uint8_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    START_DEBUGGING :: 301;
 
+    STOP_DEBUGGING :: 302;
     // Stop debugging the target. If the target is not executing this will return
     // RDBG_COMMAND_RESULT_INVALID_TARGET_STATE.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    STOP_DEBUGGING :: 302;
 
+    RESTART_DEBUGGING :: 303;
     // Restart debugging if the target is being debugging (either suspended or
     // executing) and the target was not attached to a process. Otherwise,
     // returns RDBG_COMMAND_RESULT_INVALID_TARGET_STATE.
@@ -438,8 +439,8 @@ rdbg_Command :: enum u16 {
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    RESTART_DEBUGGING :: 303;
 
+    ATTACH_TO_PROCESS_BY_PID :: 304;
     // Attach to a process by the given process-id. The value of
     // |continue_execution| indicates whether the process should resume execution
     // after attached.  The debugger target behavior specifies what should happen
@@ -453,8 +454,8 @@ rdbg_Command :: enum u16 {
     // [dtb :: rdbg_DebuggingTargetBehavior (uint8_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    ATTACH_TO_PROCESS_BY_PID :: 304;
 
+    ATTACH_TO_PROCESS_BY_NAME :: 305;
     // Attach to a process by the given name. The first process found, in the
     // case there are more than one with the same name, is used. The value of
     // |continue_execution| indicates whether the process should resume execution
@@ -469,24 +470,24 @@ rdbg_Command :: enum u16 {
     // [dtb :: rdbg_DebuggingTargetBehavior (uint8_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    ATTACH_TO_PROCESS_BY_NAME :: 305;
 
+    DETACH_FROM_PROCESS :: 306;
     // Detach from a target that is being debugged. Can return
     // RDBG_COMMAND_RESULT_OK or RDBG_COMMAND_RESULT_INVALID_TARGET_STATE.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    DETACH_FROM_PROCESS :: 306;
 
+    STEP_INTO_BY_LINE :: 307;
     // With the target suspended, step into by line. If a function call occurs,
     // this command will enter the function.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    STEP_INTO_BY_LINE :: 307;
 
+    STEP_INTO_BY_INSTRUCTION :: 308;
     // With the target suspended, step into by instruction. If a function call
     // occurs, this command will enter the function. Can return
     // RDBG_COMMAND_RESULT_OK or RDBG_COMMAND_RESULT_INVALID_TARGET_STATE.
@@ -494,8 +495,8 @@ rdbg_Command :: enum u16 {
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    STEP_INTO_BY_INSTRUCTION :: 308;
 
+    STEP_OVER_BY_LINE :: 309;
     // With the target suspended, step into by line. If a function call occurs,
     // this command step over that function and not enter it. Can return
     // return RDBG_COMMAND_RESULT_OK or RDBG_COMMAND_RESULT_INVALID_TARGET_STATE.
@@ -503,8 +504,8 @@ rdbg_Command :: enum u16 {
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    STEP_OVER_BY_LINE :: 309;
 
+    STEP_OVER_BY_INSTRUCTION :: 310;
     // With the target suspended, step into by instruction. If a function call
     // occurs, this command will step over that function and not enter it. Can
     // return RDBG_COMMAND_RESULT_OK or RDBG_COMMAND_RESULT_INVALID_TARGET_STATE.
@@ -512,24 +513,24 @@ rdbg_Command :: enum u16 {
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    STEP_OVER_BY_INSTRUCTION :: 310;
 
+    STEP_OUT :: 311;
     // With the target suspended, continue running to the call site of the
     // current function, i.e., step out.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    STEP_OUT :: 311;
 
+    CONTINUE_EXECUTION :: 312;
     // With the target suspended, continue execution. Can return
     // RDBG_COMMAND_RESULT_OK or RDBG_COMMAND_RESULT_INVALID_TARGET_STATE.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    CONTINUE_EXECUTION :: 312;
 
+    RUN_TO_FILE_AT_LINE :: 313;
     // When the target is not being debugged or is suspended, run to the given
     // filename and line number.
     //
@@ -538,19 +539,19 @@ rdbg_Command :: enum u16 {
     // [line_num :: uint32_t]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    RUN_TO_FILE_AT_LINE :: 313;
 
+    BREAK_EXECUTION :: 314;
     // Halt the execution of a target that is in the executing state. Can return
     // RDBG_COMMAND_RESULT_OK or RDBG_COMMAND_RESULT_INVALID_TARGET_STATE.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    BREAK_EXECUTION :: 314;
 
     //
     // Breakpoints
 
+    GET_BREAKPOINTS :: 600;
     // Return the current list of breakpoints. These are the user requested
     // breakpoints. Resolved breakpoint locations, if any, for a requested
     // breakpoint can be obtained using RDBG_COMMAND_GET_BREAKPOINT_LOCATIONS.
@@ -583,8 +584,8 @@ rdbg_Command :: enum u16 {
     //       [access_kind :: rdbg_ProcessorBreakpointAccessKind (uint8_t)]
     //   }
     // }
-    GET_BREAKPOINTS :: 600;
 
+    GET_BREAKPOINT_LOCATIONS :: 601;
     // Return the list of resolved locations for a particular breakpoint. If the
     // ID is not valid for the current session RDBG_COMMAND_RESULT_INVALID_ID is
     // returned.
@@ -600,8 +601,8 @@ rdbg_Command :: enum u16 {
     //   [filename :: rdbg_String]
     //   [actual_line_num :: uint32_t]
     // }
-    GET_BREAKPOINT_LOCATIONS :: 601;
 
+    GET_FUNCTION_OVERLOADS :: 602;
     // Return a list of function overloads for the given function name. If the
     // target is being debugged (suspended or executing) then returns a list of
     // function overloads for the given function name, otherwise
@@ -617,8 +618,8 @@ rdbg_Command :: enum u16 {
     //   [overload_id :: rdbg_Id]
     //   [signature :: rdbg_String]
     // }
-    GET_FUNCTION_OVERLOADS :: 602;
 
+    ADD_BREAKPOINT_AT_FUNCTION :: 603;
     // Request a breakpoint at the given function name and overload. Pass an
     // overload ID of zero to add requested breakpoints for all functions with
     // the given name.
@@ -630,8 +631,8 @@ rdbg_Command :: enum u16 {
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [bp_id :: rdbg_Id]
-    ADD_BREAKPOINT_AT_FUNCTION :: 603;
 
+    ADD_BREAKPOINT_AT_FILENAME_LINE :: 604;
     // Request a breakpoint at the given source file and line number.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -641,8 +642,8 @@ rdbg_Command :: enum u16 {
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [bp_id :: rdbg_Id]
-    ADD_BREAKPOINT_AT_FILENAME_LINE :: 604;
 
+    ADD_BREAKPOINT_AT_ADDRESS :: 605;
     // Request a breakpoint at the given address.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -651,8 +652,8 @@ rdbg_Command :: enum u16 {
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [bp_id :: rdbg_Id]
-    ADD_BREAKPOINT_AT_ADDRESS :: 605;
 
+    ADD_PROCESSOR_BREAKPOINT :: 606;
     // Add a processor (hardware) breakpoint.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -663,8 +664,8 @@ rdbg_Command :: enum u16 {
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [bp_id :: rdbg_Id]
-    ADD_PROCESSOR_BREAKPOINT :: 606;
 
+    SET_BREAKPOINT_CONDITION :: 607;
     // Sets the conditional expression for the given breakpoint. Can pass in a
     // zero-length string for none.
     //
@@ -673,8 +674,8 @@ rdbg_Command :: enum u16 {
     // [condition_expr :: rdbg_String]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    SET_BREAKPOINT_CONDITION :: 607;
 
+    UPDATE_BREAKPOINT_LINE :: 608;
     // Given an existing breakpoint of type RDBG_BREAKPOINT_KIND_FILENAME_LINE,
     // update its line number to the given one-based value.
     //
@@ -683,8 +684,8 @@ rdbg_Command :: enum u16 {
     // [line_num :: uint32_t]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    UPDATE_BREAKPOINT_LINE :: 608;
 
+    ENABLE_BREAKPOINT :: 609;
     // Enable or disable an existing breakpoint.
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -692,23 +693,23 @@ rdbg_Command :: enum u16 {
     // [enable :: rdbg_Bool]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    ENABLE_BREAKPOINT :: 609;
 
+    DELETE_BREAKPOINT :: 610;
     // Delete an existing breakpoint.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // [bp_id :: rdbg_Id]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    DELETE_BREAKPOINT :: 610;
 
+    DELETE_ALL_BREAKPOINTS :: 611;
     // Delete all existing breakpoints.
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    DELETE_ALL_BREAKPOINTS :: 611;
 
+    GET_BREAKPOINT :: 612;
     // Return information about a specific user requested breakpoint.
     //
     //  * Presently, module name is not used and will always be a zero length
@@ -735,11 +736,11 @@ rdbg_Command :: enum u16 {
     //     [num_bytes :: uint8_t]
     //     [access_kind :: rdbg_ProcessorBreakpointAccessKind (uint8_t)]
     // }
-    GET_BREAKPOINT :: 612;
 
     //
     // Watch Window Expressions
 
+    GET_WATCHES :: 700;
     // Return a list of watch expressions for the given, one-based watch window,
     // presently ranging in [1,8].
     //
@@ -753,8 +754,8 @@ rdbg_Command :: enum u16 {
     //   [expr :: rdbg_String]
     //   [comment :: rdbg_String]
     // }
-    GET_WATCHES :: 700;
 
+    ADD_WATCH :: 701;
     // Add a watch expresion to the given, one-based watch window. Presently,
     // only single line comments are supported. Spaces will replace any newlines
     // found in a comment.
@@ -766,8 +767,8 @@ rdbg_Command :: enum u16 {
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
     // [uid :: rdbg_Id]
-    ADD_WATCH :: 701;
 
+    UPDATE_WATCH_EXPRESSION :: 702;
     // Updates the expression for a given watch
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -775,8 +776,8 @@ rdbg_Command :: enum u16 {
     // [expr :: rdbg_String]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    UPDATE_WATCH_EXPRESSION :: 702;
 
+    UPDATE_WATCH_COMMENT :: 703;
     // Updates the comment for a given watch
     //
     // [cmd :: rdbg_Command (uint16_t)]
@@ -784,23 +785,22 @@ rdbg_Command :: enum u16 {
     // [comment :: rdbg_String]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    UPDATE_WATCH_COMMENT :: 703;
 
+    DELETE_WATCH :: 704;
     // Delete the given watch
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // [uid :: rdbg_Id]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    DELETE_WATCH :: 704;
 
+    DELETE_ALL_WATCHES :: 705;
     // Delete all watches in the given watch window
     //
     // [cmd :: rdbg_Command (uint16_t)]
     // [window_num :: uint8_t]
     // ->
     // [result :: rdbg_CommandResult (uint16_t)]
-    DELETE_ALL_WATCHES :: 705;
 
 
     RDBG_COMMAND_BRING_DEBUGGER_TO_FOREGROUND :: BRING_DEBUGGER_TO_FOREGROUND;
@@ -871,20 +871,20 @@ rdbg_Command :: enum u16 {
 rdbg_SourceLocChangedReason :: enum u16 {
     UNSPECIFIED :: 0;
 
-    // An open-file from the command-line updated the source location
     BY_COMMAND_LINE :: 1;
+    // An open-file from the command-line updated the source location
 
-    // A RDBG_COMMAND_GOTO_FILE_AT_LINE from a named-pipes driver updated the source location
     BY_DRIVER :: 2;
+    // A RDBG_COMMAND_GOTO_FILE_AT_LINE from a named-pipes driver updated the source location
 
-    // A selection of a breakpoint in breakpoints pane updated the source location
     BREAKPOINT_SELECTED :: 3;
+    // A selection of a breakpoint in breakpoints pane updated the source location
 
-    // The current stack frame was changed in the callstack pane and updated the source location
     CURRENT_FRAME_CHANGED :: 4;
+    // The current stack frame was changed in the callstack pane and updated the source location
 
-    // The active thread was changed in the threads pane and updated the source location
     ACTIVE_THREAD_CHANGED :: 5;
+    // The active thread was changed in the threads pane and updated the source location
 
     //
     // The process was suspended and updated the source location
@@ -915,82 +915,82 @@ rdbg_SourceLocChangedReason :: enum u16 {
 
 
 rdbg_DebugEventKind :: enum u16 {
+    EXIT_PROCESS :: 100;
     // A target being debugged has exited.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [exit_code :: uint32_t]
-    EXIT_PROCESS :: 100;
 
+    TARGET_STARTED :: 101;
     // The target for the active configuration is now being debugged.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [process_id :: uint32_t]
-    TARGET_STARTED :: 101;
 
+    TARGET_ATTACHED :: 102;
     // The debugger has attached to a target process.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [process_id :: uint32_t]
-    TARGET_ATTACHED :: 102;
 
+    TARGET_DETACHED :: 103;
     // The debugger has detached from a target process.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [process_id :: uint32_t]
-    TARGET_DETACHED :: 103;
 
+    TARGET_CONTINUED :: 104;
     // The debugger has transitioned from suspended to executing.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [process_id :: uint32_t]
-    TARGET_CONTINUED :: 104;
 
+    SOURCE_LOCATION_CHANGED :: 200;
     // The source location changed due to an event in the debugger.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [filename :: rdbg_String]
     // [line_num :: uint32_t]
     // [reason :: rdbg_SourceLocChangedReason (uint16_t) ]
-    SOURCE_LOCATION_CHANGED :: 200;
 
+    BREAKPOINT_HIT :: 600;
     // A user breakpoint was hit
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [bp_id :: rdbg_Id]
-    BREAKPOINT_HIT :: 600;
 
+    BREAKPOINT_RESOLVED :: 601;
     // The breakpoint with the given ID has been resolved (has a valid location).
     // This can happen if the breakpoint was set in module that became loaded,
     // for instance.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [bp_id :: rdbg_Id]
-    BREAKPOINT_RESOLVED :: 601;
 
+    BREAKPOINT_ADDED :: 602;
     // A new user breakpoint was added.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [bp_id :: rdbg_Id]
-    BREAKPOINT_ADDED :: 602;
 
+    BREAKPOINT_MODIFIED :: 603;
     // A user breakpoint was modified.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [bp_id :: rdbg_Id]
-    BREAKPOINT_MODIFIED :: 603;
 
+    BREAKPOINT_REMOVED :: 604;
     // A user breakpoint was removed.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [bp_id :: rdbg_Id]
-    BREAKPOINT_REMOVED :: 604;
 
+    OUTPUT_DEBUG_STRING :: 800;
     // An OutputDebugString was received by the debugger. The given string will
     // be UTF-8 encoded.
     //
     // [kind :: rdbg_DebugEventKind (uint16_t)]
     // [str :: rdbg_String]
-    OUTPUT_DEBUG_STRING :: 800;
 
 
     RDBG_DEBUG_EVENT_KIND_EXIT_PROCESS :: EXIT_PROCESS;

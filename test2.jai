@@ -1,16 +1,18 @@
 #import "Basic";
 #import "GUI";
+#import "Strings";
 
 main :: () {
-    window := gui_create_application_window("Test", 768, 768, 3024, 100);
+    window := gui_create_application_window("Test", 512, 512, 2624, 10);
 
-    while true {
-        quit := gui_begin_frame();
-        defer  if quit  break;
+    should_quit := false;
 
-        if keyboard.escape  quit = true;
+    while !should_quit {
+        should_quit = gui_begin_frame();
+
+        if keyboard.escape  should_quit = true;
 
         if button(at(0.25,0.25, 0.75,0.75), .EMOTICON_POOP)
-            quit = true;
+            should_quit = true;
     }
 }

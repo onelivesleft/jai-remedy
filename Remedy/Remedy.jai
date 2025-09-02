@@ -1,21 +1,23 @@
 // TODO: Readme
 // [ ] Readme
-// [ ] remove size member of results/events, just use size_of
-// [ ] solidify MO of parsing results (into a parse proc that returns a jai-happy struct, not a remedy synonym)
-// [ ] make big theme change when running target so it's obvious we're not in an edit mode.
+// [x] remove size member of results/events, just use size_of
+// [.] solidify MO of parsing results (into a parse proc that returns a jai-happy struct, not a remedy synonym)
+// [x] make big theme change when running target so it's obvious we're not in an edit mode.
 // [ ] hover vars
 // [ ] watch window
 // [ ] stack window
+// [ ] Set remedy window name
 // [x] Convert pipe reading to message mode, simplifying code greatly!
+// [ ] Update breakpoint poisitions while editting
 
 // All data returned in events and results is temporary, stored in a module specific buffer or temporary_storage.
-// These last until the next call to update, reset_temporary_storage repsectively.
+// These last until the next call to update or reset_temporary_storage repsectively.
 // If you want to keep a string around, copy it!
 
 
 init :: () -> success: bool {
     name := utf8_to_wide_new(CONTROL_PIPE_NAME,, temp);
-    control_pipe = CreateFileW(name, GENERIC_READ | GENERIC_WRITE, 0, null, OPEN_EXISTING, 0, null);
+    control_pipe = CreateFileW(name, GENERIC_READ|GENERIC_WRITE, 0, null, OPEN_EXISTING, 0, null);
     if control_pipe == INVALID_HANDLE_VALUE {
         #if VERBOSE {
             error := GetLastError();
@@ -26,11 +28,11 @@ init :: () -> success: bool {
         }
         return false;
     }
-    SetNamedPipeHandleState(control_pipe, *PIPE_READMODE_MESSAGE, null, null);
+    new_mode : u32 = PIPE_READMODE_MESSAGE;
+    SetNamedPipeHandleState(control_pipe, *new_mode, null, null);
 
     name = utf8_to_wide_new(EVENTS_PIPE_NAME,, temp);
-    MAGIC :: 256;
-    events_pipe = CreateFileW(name, GENERIC_READ|MAGIC, 0, null, OPEN_EXISTING, 0, null);
+    events_pipe = CreateFileW(name, GENERIC_READ|FILE_WRITE_ATTRIBUTES, 0, null, OPEN_EXISTING, 0, null);
     if events_pipe == INVALID_HANDLE_VALUE {
         #if VERBOSE {
             error := GetLastError();
@@ -42,7 +44,7 @@ init :: () -> success: bool {
         return false;
     }
 
-    SetNamedPipeHandleState(events_pipe, *PIPE_READMODE_MESSAGE, null, null);
+    SetNamedPipeHandleState(events_pipe, *new_mode, null, null);
 
     return true;
 }

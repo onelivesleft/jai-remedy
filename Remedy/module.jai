@@ -21,5 +21,7 @@ EVENTS_PIPE_NAME :: #run tprint("\\\\.\\pipe\\%-events", REMEDY_SERVERNAME);
 
 TransactNamedPipe :: (hNamedPipe: HANDLE, lpInBuffer: *void, nInBufferSize: DWORD, lpOutBuffer: *void, nOutBufferSize: DWORD, lpBytesRead: *DWORD, lpOverlapped : *void = null) -> bool #foreign kernel32;
 GetNamedPipeHandleStateA :: (hNamedPipe: HANDLE, lpState: *DWORD, lpCurInstances: *DWORD, lpMaxCollectionCount: *DWORD, lpCollectDataTimeout: *DWORD,  lpUserName: *void, nMaxUserNameSize: DWORD) -> bool #foreign kernel32;
-PIPE_READMODE_MESSAGE : u32 = 0x00000002;
+PIPE_READMODE_MESSAGE :: 0x00000002;
+FILE_WRITE_ATTRIBUTES :: 0x100;
+
 
